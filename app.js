@@ -321,7 +321,7 @@ class ChantingTracker {
 
     handleGoalSliderChange() {
         const sliderValue = parseInt(this.ui.elements.goalSlider.value);
-        const goalValues = [1, 4, 8, 16, 32, 48, 64];
+        const goalValues = [2, 4, 8, 16, 32, 48, 64];
         const newGoal = goalValues[sliderValue];
 
         // Update the display value immediately
