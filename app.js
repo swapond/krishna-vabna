@@ -197,9 +197,19 @@ class ChantingTracker {
 
     scrollToCounter() {
         const counterElement = this.ui.elements.chantButton;
+        const header = document.querySelector('header');
+
         if (counterElement) {
-            const targetPosition = counterElement.getBoundingClientRect().top;
-            window.scrollBy({
+            // Get the header height to offset the scroll position
+            const headerHeight = header ? header.offsetHeight : 0;
+            // Add some extra padding for better visual spacing
+            const extraPadding = 30;
+
+            // Calculate the target position accounting for header and padding
+            const elementPosition = counterElement.getBoundingClientRect().top + window.pageYOffset;
+            const targetPosition = elementPosition - headerHeight - extraPadding;
+
+            window.scrollTo({
                 top: targetPosition,
                 behavior: 'smooth'
             });
