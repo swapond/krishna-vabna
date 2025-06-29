@@ -8,9 +8,9 @@ class UIManager {
     initializeElements() {
         this.elements = {
             chantButton: document.getElementById('chantButton'),
-            setGoalButton: document.getElementById('setGoalButton'),
+            goalSlider: document.getElementById('goalSlider'),
+            goalDisplayValue: document.getElementById('goalDisplayValue'),
             themeToggle: document.getElementById('themeToggle'),
-            goalInput: document.getElementById('goalInput'),
 
             // Reset buttons (including new reset round button)
             resetBeadsButton: document.getElementById('resetBeadsButton'),

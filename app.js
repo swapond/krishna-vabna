@@ -29,17 +29,15 @@ class ChantingTracker {
         this.updateDisplay();
         this.initializeAudioControls();
         this.initializeAutoScroll();
+        this.initializeGoalSlider();
     }
 
     bindEvents() {
         // Main chanting action
         this.ui.elements.chantButton.addEventListener('click', () => this.chantBead());
 
-        // Goal setting
-        this.ui.elements.setGoalButton.addEventListener('click', () => this.setDailyGoal());
-        this.ui.elements.goalInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.setDailyGoal();
-        });
+        // Goal setting with slider
+        this.ui.elements.goalSlider?.addEventListener('input', () => this.handleGoalSliderChange());
 
         // Theme toggle
         this.ui.elements.themeToggle.addEventListener('click', () => this.theme.toggleTheme());
@@ -319,6 +317,63 @@ class ChantingTracker {
         } else {
             this.ui.showMessage('Please enter a goal between 1 and 64 rounds', 'error');
         }
+    }
+
+    handleGoalSliderChange() {
+        const sliderValue = parseInt(this.ui.elements.goalSlider.value);
+        const goalValues = [1, 4, 8, 16, 32, 48, 64];
+        const newGoal = goalValues[sliderValue];
+
+        // Update the display value immediately
+        if (this.ui.elements.goalDisplayValue) {
+            this.ui.elements.goalDisplayValue.textContent = newGoal;
+        }
+
+        // Update the goal marks highlighting
+        this.updateGoalMarks(newGoal);
+
+        // Save the new goal
+        this.data.dailyGoal = newGoal;
+        this.dailyGoal = newGoal;
+        DataUtils.addActivity(this.data, `Set daily goal to ${newGoal} rounds`, 'goal');
+        this.saveData();
+        this.updateDisplay();
+
+        // Show feedback message
+        this.ui.showMessage(`Daily goal set to ${newGoal} rounds`, 'success');
+    }
+
+    updateGoalMarks(selectedValue) {
+        const goalMarks = document.querySelectorAll('.goal-mark');
+        goalMarks.forEach(mark => {
+            const value = parseInt(mark.dataset.value);
+            if (value === selectedValue) {
+                mark.classList.add('font-semibold', 'text-krishna-orange');
+                mark.classList.remove('text-gray-400');
+            } else {
+                mark.classList.remove('font-semibold', 'text-krishna-orange');
+                mark.classList.add('text-gray-400');
+            }
+        });
+    }
+
+    initializeGoalSlider() {
+        // Set initial slider position based on current goal
+        const goalValues = [1, 4, 8, 16, 32, 48, 64];
+        const currentGoal = this.data.dailyGoal;
+        const sliderPosition = goalValues.indexOf(currentGoal);
+
+        if (this.ui.elements.goalSlider && sliderPosition !== -1) {
+            this.ui.elements.goalSlider.value = sliderPosition;
+        }
+
+        // Update initial display
+        if (this.ui.elements.goalDisplayValue) {
+            this.ui.elements.goalDisplayValue.textContent = currentGoal;
+        }
+
+        // Update goal marks
+        this.updateGoalMarks(currentGoal);
     }
 
     updateDisplay() {
@@ -746,6 +801,72 @@ style.textContent = `
     html:not(.dark) .bg-gradient-to-r.from-krishna-orange {
         background: linear-gradient(to right, #FF6B35, #F7931E) !important;
         color: rgb(255 255 255) !important;
+    }
+
+    /* Light mode quick control button styles */
+    html:not(.dark) .bg-amber-50 {
+        background-color: rgb(254 252 232) !important;
+    }
+    
+    html:not(.dark) .hover\\:bg-amber-100:hover {
+        background-color: rgb(254 243 199) !important;
+    }
+    
+    html:not(.dark) .bg-purple-50 {
+        background-color: rgb(250 245 255) !important;
+    }
+    
+    html:not(.dark) .hover\\:bg-purple-100:hover {
+        background-color: rgb(243 232 255) !important;
+    }
+    
+    html:not(.dark) .bg-blue-50 {
+        background-color: rgb(239 246 255) !important;
+    }
+    
+    html:not(.dark) .hover\\:bg-blue-100:hover {
+        background-color: rgb(219 234 254) !important;
+    }
+    
+    html:not(.dark) .bg-red-600 {
+        background-color: rgb(220 38 38) !important;
+    }
+    
+    html:not(.dark) .hover\\:bg-red-700:hover {
+        background-color: rgb(185 28 28) !important;
+    }
+    
+    /* Light mode button borders */
+    html:not(.dark) .border-amber-200 {
+        border-color: rgb(254 215 170) !important;
+    }
+    
+    html:not(.dark) .hover\\:border-amber-300:hover {
+        border-color: rgb(252 191 73) !important;
+    }
+    
+    html:not(.dark) .border-purple-200 {
+        border-color: rgb(233 213 255) !important;
+    }
+    
+    html:not(.dark) .hover\\:border-purple-300:hover {
+        border-color: rgb(196 181 253) !important;
+    }
+    
+    html:not(.dark) .border-blue-200 {
+        border-color: rgb(191 219 254) !important;
+    }
+    
+    html:not(.dark) .hover\\:border-blue-300:hover {
+        border-color: rgb(147 197 253) !important;
+    }
+    
+    html:not(.dark) .border-red-600 {
+        border-color: rgb(220 38 38) !important;
+    }
+    
+    html:not(.dark) .hover\\:border-red-700:hover {
+        border-color: rgb(185 28 28) !important;
     }
 `;
 document.head.appendChild(style);
