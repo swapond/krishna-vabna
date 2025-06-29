@@ -51,7 +51,7 @@ class DialogManager {
         });
 
         // Auto-dismiss countdown
-        let countdown = 3;
+        let countdown = 30;
         const countdownElement = dialog.querySelector('#countdown');
         const countdownInterval = setInterval(() => {
             countdown--;

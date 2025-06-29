@@ -110,6 +110,25 @@
             transform: scale(1.1);
             box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
         }
+
+        /* Collapsible sections animations */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .collapsible-content.expanded {
+            max-height: 500px;
+        }
+
+        .chevron-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .chevron-icon.rotate-180 {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen transition-colors duration-300">
@@ -205,132 +224,69 @@
 
                 <!-- Control Buttons -->
                 <div class="space-y-4">
-                    <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400">Reset Options</h4>
-
-                    <!-- Reset Buttons -->
-                    <div class="space-y-2">
-                        <button id="resetBeadsButton" class="w-full flex items-center justify-between p-3 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-750 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 bg-amber-100 dark:bg-amber-900/50 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-undo text-amber-600 dark:text-amber-400 text-sm"></i>
-                                </div>
-                                <div class="text-left">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Reset Beads</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Clear current bead count only</div>
-                                </div>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 text-xs"></i>
-                        </button>
-
-                        <button id="resetRoundButton" class="w-full flex items-center justify-between p-3 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-750 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-rotate-left text-purple-600 dark:text-purple-400 text-sm"></i>
-                                </div>
-                                <div class="text-left">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Reset Rounds</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Clear completed rounds only</div>
-                                </div>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 text-xs"></i>
-                        </button>
-
-                        <button id="resetAllButton" class="w-full flex items-center justify-between p-3 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-750 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-clock-rotate-left text-blue-600 dark:text-blue-400 text-sm"></i>
-                                </div>
-                                <div class="text-left">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Reset Today</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Clear today's progress, keep history</div>
-                                </div>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 text-xs"></i>
-                        </button>
-
-                        <button id="clearEverythingButton" class="w-full flex items-center justify-between p-3 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 bg-red-100 dark:bg-red-900/50 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-trash-can text-red-600 dark:text-red-400 text-sm"></i>
-                                </div>
-                                <div class="text-left">
-                                    <div class="text-sm font-medium text-red-800 dark:text-red-200">Clear Everything</div>
-                                    <div class="text-xs text-red-600 dark:text-red-400">Permanent reset, keeps theme only</div>
-                                </div>
-                            </div>
-                            <i class="fas fa-exclamation-triangle text-red-500 dark:text-red-400 text-xs"></i>
+                    <!-- Compact Options Header -->
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400">Quick Controls</h4>
+                        <button id="toggleOptionsBtn" class="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                            <i class="fas fa-chevron-down" id="optionsChevron"></i>
+                            <span class="ml-1 font-bold">More</span>
                         </button>
                     </div>
 
-                    <!-- Info Notice -->
-                    <div class="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/30 rounded-lg">
-                        <div class="flex items-start space-x-2">
-                            <i class="fas fa-info-circle text-blue-600 dark:text-blue-400 text-sm mt-0.5 flex-shrink-0"></i>
-                            <p class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                                <strong>Tip:</strong> Use "Reset Beads" during chanting, "Reset Today" for daily restart, and "Clear Everything" for complete fresh start.
-                            </p>
+                    <!-- Compact Reset Options -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="resetBeadsButton" class="flex items-center justify-center p-2 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-750 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200 group">
+                            <i class="fas fa-undo text-amber-600 dark:text-amber-400 text-sm mr-2"></i>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">Reset Beads</span>
+                        </button>
+
+                        <button id="resetRoundButton" class="flex items-center justify-center p-2 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-750 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200 group">
+                            <i class="fas fa-rotate-left text-purple-600 dark:text-purple-400 text-sm mr-2"></i>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">Reset Rounds</span>
+                        </button>
+                    </div>
+
+                    <!-- Expandable Advanced Options -->
+                    <div id="advancedOptions" class="hidden space-y-3">
+                        <div class="grid grid-cols-1 gap-2">
+                            <button id="resetAllButton" class="flex items-center justify-center p-2 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-750 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200">
+                                <i class="fas fa-clock-rotate-left text-blue-600 dark:text-blue-400 text-sm mr-2"></i>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">Reset Today</span>
+                            </button>
+
+                            <button id="clearEverythingButton" class="flex items-center justify-center p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg transition-all duration-200">
+                                <i class="fas fa-trash-can text-red-600 dark:text-red-400 text-sm mr-2"></i>
+                                <span class="text-sm font-medium text-red-800 dark:text-red-200">Clear All</span>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Modern Audio Settings Panel -->
-                <div class="space-y-6 pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
-                    <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-8 h-8 bg-gradient-to-br from-krishna-orange to-krishna-gold rounded-lg flex items-center justify-center">
-                            <i class="fas fa-music text-white text-sm"></i>
+                <!-- Compact Audio Settings -->
+                <div class="space-y-4 pt-4 border-t border-gray-200/50 dark:border-gray-700/50">
+                    <!-- Quick Audio Toggles -->
+                    <div class="flex items-center justify-between space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-microphone text-orange-600 dark:text-orange-400 text-xs"></i>
+                            <span class="text-sm text-gray-900 dark:text-gray-300">Chanting Voice</span>
                         </div>
-                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Audio Preferences</h4>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="voiceChantingToggle" class="sr-only peer" checked>
+                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-orange-300/25 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
+                        </label>
                     </div>
 
-                    <!-- Voice Toggle Card - IMPROVED TEXT -->
-                    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
-                        <div class="flex items-center space-x-3 mb-4">
-                            <div class="w-6 h-6 bg-orange-100 dark:bg-orange-900/50 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-microphone-lines text-orange-600 dark:text-orange-400 text-xs"></i>
+                    <!-- Voice Settings - Show when voice is enabled -->
+                    <div id="voiceSettings" class="space-y-3">
+                        <!-- Voice Selection -->
+                        <div id="voiceSelectionCard" class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm font-medium text-gray-900 dark:text-gray-300">Voice Type</label>
+                                <button id="testVoiceButton" class="px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors">
+                                    Preview
+                                </button>
                             </div>
-                            <div>
-                                <label class="text-sm font-semibold text-gray-900 dark:text-white">Chanting Voices</label>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Play audio recordings while chanting</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-gray-700/30 rounded-lg">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900/50 rounded-lg flex items-center justify-center">
-                                    <i id="voiceChantingIcon" class="fas fa-microphone text-orange-600 dark:text-orange-400 text-sm"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Chant Voice</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">
-                                        <span id="voiceChantingStatus">On</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="voiceChantingToggle" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300/25 dark:peer-focus:ring-orange-800/25 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Voice Selection Card - IMPROVED TEXT -->
-                    <div id="voiceSelectionCard" class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-6 h-6 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-microphone text-blue-600 dark:text-blue-400 text-xs"></i>
-                                </div>
-                                <div>
-                                    <label class="text-sm font-semibold text-gray-900 dark:text-white">Select Voice</label>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Choose which voice to play</p>
-                                </div>
-                            </div>
-                            <button id="testVoiceButton" class="px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
-                                Preview
-                            </button>
-                        </div>
-                        <div class="relative">
-                            <select id="voiceSelect" class="w-full appearance-none bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-krishna-orange/50 focus:border-krishna-orange transition-all cursor-pointer">
+                            <select id="voiceSelect" class="w-full appearance-none bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-krishna-orange/50 focus:border-krishna-orange transition-all cursor-pointer">
                                 <option value="prabhupada">🙏 Prabhupada</option>
                                 <option value="girl">👩 Girl Voice</option>
                                 <option value="classic">⚡ Classic Tone</option>
@@ -339,111 +295,39 @@
                                 <option value="tibetan">🎵 Tibetan Bowl</option>
                                 <option value="crystal">💎 Crystal Chime</option>
                             </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Speed Control Card - ONLY SHOWN WHEN VOICE IS ENABLED -->
-                    <div id="speedControlCard" class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
-                        <div class="flex items-center space-x-3 mb-4">
-                            <div class="w-6 h-6 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-gauge text-green-600 dark:text-green-400 text-xs"></i>
-                            </div>
-                            <div>
-                                <label class="text-sm font-semibold text-gray-900 dark:text-white">Playback Speed</label>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Adjust chanting tempo</p>
-                            </div>
                         </div>
 
-                        <!-- Speed Slider -->
-                        <div class="space-y-3">
+                        <!-- Speed Control -->
+                        <div id="speedControlCard" class="space-y-2">
                             <div class="flex items-center justify-between">
-                                <span class="text-xs text-gray-500 dark:text-gray-400">Slow</span>
-                                <span id="speedValue" class="text-sm font-semibold text-krishna-orange">1.4×</span>
-                                <span class="text-xs text-gray-500 dark:text-gray-400">Fast</span>
+                                <label class="text-sm font-medium text-gray-900 dark:text-gray-300">Speed</label>
+                                <span id="speedValue" class="text-sm font-medium text-krishna-orange">1.4×</span>
                             </div>
-
-                            <!-- Custom Slider -->
-                            <div class="relative">
-                                <input type="range" id="speedSlider" min="1" max="1.7" step="0.1" value="1.4"
-                                       class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider">
-
-                                <!-- Speed markers -->
-                                <div class="flex justify-between mt-2 px-1">
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                                        <span class="text-xs text-gray-400 dark:text-gray-500 mt-1">1.0</span>
-                                    </div>
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                                        <span class="text-xs text-gray-400 dark:text-gray-500 mt-1">1.25</span>
-                                    </div>
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-1.5 h-1.5 bg-krishna-orange rounded-full"></div>
-                                        <span class="text-xs text-krishna-orange font-medium mt-1">1.4</span>
-                                    </div>
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                                        <span class="text-xs text-gray-400 dark:text-gray-500 mt-1">1.5</span>
-                                    </div>
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                                        <span class="text-xs text-gray-400 dark:text-gray-500 mt-1">1.7</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <input type="range" id="speedSlider" min="1" max="1.7" step="0.1" value="1.4"
+                                   class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider">
                         </div>
                     </div>
 
-                    <!-- Other Audio Settings Card - IMPROVED TEXT -->
-                    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
-                        <div class="flex items-center space-x-3 mb-4">
-                            <div class="w-6 h-6 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-volume-high text-purple-600 dark:text-purple-400 text-xs"></i>
-                            </div>
-                            <div>
-                                <label class="text-sm font-semibold text-gray-900 dark:text-white">Other Sounds</label>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Additional audio settings</p>
-                            </div>
+                    <div class="flex items-center justify-between space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-volume-up text-blue-600 dark:text-blue-400 text-xs"></i>
+                            <span class="text-sm text-gray-900 dark:text-gray-300">Beads Alert</span>
                         </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="beadSoundToggle" class="sr-only peer" checked>
+                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300/25 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
 
-                        <div class="space-y-4">
-                            <!-- Bead Sound Toggle - IMPROVED TEXT -->
-                            <div class="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-gray-700/30 rounded-lg">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
-                                        <i id="beadSoundIcon" class="fas fa-volume-up text-blue-600 dark:text-blue-400 text-sm"></i>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Bead Sounds</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">Play sound with each bead</div>
-                                    </div>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="beadSoundToggle" class="sr-only peer" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300/25 dark:peer-focus:ring-blue-800/25 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                </label>
-                            </div>
-
-                            <!-- Round Notification Toggle - IMPROVED TEXT -->
-                            <div class="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-gray-700/30 rounded-lg">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-8 h-8 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
-                                        <i id="notificationIcon" class="fas fa-bell text-green-600 dark:text-green-400 text-sm"></i>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Round Complete</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">Special sound when round finishes</div>
-                                    </div>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="notificationToggle" class="sr-only peer" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300/25 dark:peer-focus:ring-green-800/25 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-                                </label>
-                            </div>
+                    <div class="flex items-center justify-between space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-bell text-green-600 dark:text-green-400 text-xs"></i>
+                            <span class="text-sm text-gray-900 dark:text-gray-300">Round Alert</span>
                         </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="notificationToggle" class="sr-only peer" checked>
+                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-300/25 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                        </label>
                     </div>
                 </div>
 

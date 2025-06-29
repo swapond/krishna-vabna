@@ -68,6 +68,55 @@ class ChantingTracker {
 
         // Scroll button functionality
         this.ui.elements.scrollButton?.addEventListener('click', () => this.scrollToCounter());
+
+        // Collapsible options functionality
+        this.initializeCollapsibleSections();
+    }
+
+    initializeCollapsibleSections() {
+        // Options toggle
+        const toggleOptionsBtn = document.getElementById('toggleOptionsBtn');
+        const advancedOptions = document.getElementById('advancedOptions');
+        const optionsChevron = document.getElementById('optionsChevron');
+
+        if (toggleOptionsBtn && advancedOptions) {
+            toggleOptionsBtn.addEventListener('click', () => {
+                const isHidden = advancedOptions.classList.contains('hidden');
+                if (isHidden) {
+                    advancedOptions.classList.remove('hidden');
+                    optionsChevron.classList.add('rotate-180');
+                    toggleOptionsBtn.querySelector('span').textContent = 'Less';
+                } else {
+                    advancedOptions.classList.add('hidden');
+                    optionsChevron.classList.remove('rotate-180');
+                    toggleOptionsBtn.querySelector('span').textContent = 'More';
+                }
+            });
+        }
+
+        // Voice settings visibility based on voice toggle
+        this.updateVoiceSettingsVisibility();
+    }
+
+    updateVoiceSettingsVisibility() {
+        const voiceToggle = document.getElementById('voiceChantingToggle');
+        const voiceSettings = document.getElementById('voiceSettings');
+
+        if (voiceToggle && voiceSettings) {
+            const updateVisibility = () => {
+                if (voiceToggle.checked) {
+                    voiceSettings.classList.remove('hidden');
+                } else {
+                    voiceSettings.classList.add('hidden');
+                }
+            };
+
+            // Set initial visibility
+            updateVisibility();
+
+            // Update visibility when toggle changes
+            voiceToggle.addEventListener('change', updateVisibility);
+        }
     }
 
     chantBead() {
@@ -122,7 +171,7 @@ class ChantingTracker {
     // New method: Reset only rounds (like in provided code)
     resetRound() {
         this.dialog.showConfirmDialog(
-            'Reset completed rounds for today?',
+            'Reset Completed Rounds?\n\nThis will clear all rounds you\'ve completed today while keeping your current bead progress intact. Your overall statistics and streak will remain unchanged.',
             () => {
                 const today = DataUtils.getTodayKey();
                 const roundsToReset = this.data.dailyHistory[today] || 0;
@@ -294,7 +343,7 @@ class ChantingTracker {
 
     resetBeads() {
         this.dialog.showConfirmDialog(
-            'Clear current bead count?',
+            'Reset Current Bead Count?\n\nThis will clear your current bead progress (0-108) without affecting completed rounds or your overall statistics. Use this if you need to restart your current round.',
             () => {
                 this.currentBeads = 0;
                 this.data.currentBeads = 0;
@@ -309,7 +358,7 @@ class ChantingTracker {
 
     resetAll() {
         this.dialog.showConfirmDialog(
-            'Clear current progress? (Keeps total rounds & streak)',
+            'Reset Today\'s Progress?\n\nThis will clear today\'s completed rounds and current bead count, giving you a fresh start for today. Your historical data, streak, and total lifetime rounds will be preserved.',
             () => {
                 // Reset current progress but preserve historical data
                 this.currentBeads = 0;
@@ -325,7 +374,7 @@ class ChantingTracker {
 
     clearEverything() {
         this.dialog.showConfirmDialog(
-            'Clear ALL data including history? (Keeps theme only)',
+            'Permanent Data Reset?\n\nThis will permanently delete ALL your chanting data including:\n• All completed rounds\n• Historical statistics\n• Activity history\n• Daily streaks\n\nOnly your theme preference will be preserved. This action cannot be undone.',
             () => {
                 // Clear everything except theme
                 this.storage.clearEverythingExceptTheme();
