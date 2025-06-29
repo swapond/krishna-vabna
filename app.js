@@ -220,10 +220,20 @@ class ChantingTracker {
         // Auto scroll to counter on page load like in provided code
         window.addEventListener('load', () => {
             const counterElement = this.ui.elements.chantButton;
+            const header = document.querySelector('header');
+
             if (counterElement) {
-                const offset = counterElement.getBoundingClientRect().top;
-                window.scrollBy({
-                    top: offset,
+                // Get the header height to offset the scroll position
+                const headerHeight = header ? header.offsetHeight : 0;
+                // Add some extra padding for better visual spacing
+                const extraPadding = 20;
+
+                // Calculate the target position accounting for header and padding
+                const elementPosition = counterElement.getBoundingClientRect().top + window.pageYOffset;
+                const targetPosition = elementPosition - headerHeight - extraPadding;
+
+                window.scrollTo({
+                    top: targetPosition,
                     behavior: 'smooth'
                 });
             }
