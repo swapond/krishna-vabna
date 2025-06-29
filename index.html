@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hare Krishna Chanting Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'krishna-orange': '#FF6B35',
+                        'krishna-gold': '#F7931E',
+                        'krishna-blue': '#4A90E2',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .mantra-text {
+            background: linear-gradient(45deg, #FF6B35, #F7931E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .chant-button {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+        }
+        .chant-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.3);
+        }
+        .stats-card {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease-in-out;
+        }
+
+        /* Custom Slider Styles */
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-track {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .dark .slider::-webkit-slider-track {
+            background: #374151;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        .slider::-moz-range-track {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            border: none;
+        }
+
+        .dark .slider::-moz-range-track {
+            background: #374151;
+        }
+
+        .slider::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .slider::-moz-range-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen transition-colors duration-300">
+    <!-- Header -->
+    <header class="bg-gray-800/50 backdrop-blur-lg border-b border-gray-700/50 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-krishna-orange to-krishna-gold rounded-full flex items-center justify-center">
+                    <i class="fas fa-om text-white text-lg"></i>
+                </div>
+                <h1 class="text-xl font-bold">Hare Krishna Chanting</h1>
+            </div>
+            <button id="themeToggle" class="p-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
+                <i class="fas fa-moon text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Mantra Display -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-6xl font-bold mantra-text mb-4">
+                Hare Krishna
+            </h2>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                Track your daily chanting progress and build a consistent spiritual practice
+            </p>
+        </div>
+
+        <!-- Chanting Interface -->
+        <div class="max-w-lg mx-auto mb-12">
+            <!-- Chanting Card -->
+            <div id="chantButton" class="bg-gradient-to-br from-krishna-orange to-krishna-gold rounded-2xl p-6 mb-6 cursor-pointer select-none shadow-2xl transform transition-all duration-200 hover:scale-[1.02] active:scale-95 h-[80vh] sm:h-auto flex items-center justify-center">
+                <div class="text-center space-y-6 w-full">
+                    <!-- Progress Circle -->
+                    <div class="relative">
+                        <svg class="progress-ring w-32 h-32 md:w-40 md:h-40 mx-auto" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="50" stroke="currentColor" stroke-width="4" fill="none" class="text-white/30"/>
+                            <circle cx="60" cy="60" r="50" stroke="currentColor" stroke-width="4" fill="none"
+                                    class="progress-ring-circle text-white" stroke-linecap="round"
+                                    stroke-dasharray="314.16" stroke-dashoffset="314.16" id="progressCircle"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center flex-col">
+                            <span class="text-2xl md:text-3xl font-bold text-white" id="currentRound">0</span>
+                            <span class="text-white/80 text-xs md:text-sm">of <span id="goalDisplay">16</span> rounds</span>
+                        </div>
+                    </div>
+
+                    <!-- Mantra Text -->
+                    <div class="text-white font-medium text-base md:text-lg leading-relaxed">
+                        <p>हरे कृष्ण हरे कृष्ण कृष्ण कृष्ण हरे हरे</p>
+                        <p>हरे राम हरे राम राम राम हरे हरे</p>
+                    </div>
+
+                    <!-- Prayer Icon & Bead Counter -->
+                    <div class="flex items-center justify-center space-x-6">
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-prayer-hands text-white text-lg"></i>
+                        </div>
+
+                        <div class="text-white">
+                            <div class="text-3xl md:text-4xl font-bold" id="beadCount">0/108</div>
+                            <div class="text-sm opacity-90">beads</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-white/20 rounded-full h-2">
+                        <div class="bg-white h-2 rounded-full transition-all duration-300"
+                             style="width: 0%" id="beadProgress"></div>
+                    </div>
+
+                    <!-- Tap Instruction -->
+                    <div class="text-white/90 text-sm mt-4">
+                        <p>🫴 Tap anywhere on this card</p>
+                        <p class="text-xs mt-1 opacity-75">or press spacebar to chant</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goal Setting -->
+            <div class="bg-gray-800/30 rounded-2xl p-6 mb-8">
+                <h3 class="text-lg font-semibold mb-4">Daily Goal & Controls</h3>
+
+                <!-- Goal Setting Row -->
+                <div class="flex items-center space-x-4 mb-6">
+                    <input type="number" id="goalInput" min="1" max="64" value="16"
+                           class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-krishna-orange">
+                    <button id="setGoalButton" class="px-6 py-2 bg-krishna-orange hover:bg-krishna-orange/80 rounded-lg transition-colors">
+                        Set Goal
+                    </button>
+                </div>
+
+                <!-- Control Buttons -->
+                <div class="space-y-4">
+                    <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400">Reset Options</h4>
+
+                    <!-- Reset Buttons -->
+                    <div class="space-y-2">
+                        <button id="resetBeadsButton" class="w-full flex items-center justify-between p-3 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-750 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-amber-100 dark:bg-amber-900/50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-undo text-amber-600 dark:text-amber-400 text-sm"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Reset Beads</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Clear current bead count only</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 text-xs"></i>
+                        </button>
+
+                        <button id="resetRoundButton" class="w-full flex items-center justify-between p-3 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-750 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-rotate-left text-purple-600 dark:text-purple-400 text-sm"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Reset Rounds</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Clear completed rounds only</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 text-xs"></i>
+                        </button>
+
+                        <button id="resetAllButton" class="w-full flex items-center justify-between p-3 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-750 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-clock-rotate-left text-blue-600 dark:text-blue-400 text-sm"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Reset Today</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Clear today's progress, keep history</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 text-xs"></i>
+                        </button>
+
+                        <button id="clearEverythingButton" class="w-full flex items-center justify-between p-3 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-red-100 dark:bg-red-900/50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-trash-can text-red-600 dark:text-red-400 text-sm"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-sm font-medium text-red-800 dark:text-red-200">Clear Everything</div>
+                                    <div class="text-xs text-red-600 dark:text-red-400">Permanent reset, keeps theme only</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-exclamation-triangle text-red-500 dark:text-red-400 text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Info Notice -->
+                    <div class="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/30 rounded-lg">
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-info-circle text-blue-600 dark:text-blue-400 text-sm mt-0.5 flex-shrink-0"></i>
+                            <p class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                                <strong>Tip:</strong> Use "Reset Beads" during chanting, "Reset Today" for daily restart, and "Clear Everything" for complete fresh start.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modern Audio Settings Panel -->
+                <div class="space-y-6 pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-8 h-8 bg-gradient-to-br from-krishna-orange to-krishna-gold rounded-lg flex items-center justify-center">
+                            <i class="fas fa-music text-white text-sm"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Audio Preferences</h4>
+                    </div>
+
+                    <!-- Voice Toggle Card - IMPROVED TEXT -->
+                    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-6 h-6 bg-orange-100 dark:bg-orange-900/50 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-microphone-lines text-orange-600 dark:text-orange-400 text-xs"></i>
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold text-gray-900 dark:text-white">Chanting Voices</label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Play audio recordings while chanting</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-gray-700/30 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900/50 rounded-lg flex items-center justify-center">
+                                    <i id="voiceChantingIcon" class="fas fa-microphone text-orange-600 dark:text-orange-400 text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Chant Voice</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        <span id="voiceChantingStatus">On</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="voiceChantingToggle" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300/25 dark:peer-focus:ring-orange-800/25 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Voice Selection Card - IMPROVED TEXT -->
+                    <div id="voiceSelectionCard" class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-6 h-6 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-microphone text-blue-600 dark:text-blue-400 text-xs"></i>
+                                </div>
+                                <div>
+                                    <label class="text-sm font-semibold text-gray-900 dark:text-white">Select Voice</label>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Choose which voice to play</p>
+                                </div>
+                            </div>
+                            <button id="testVoiceButton" class="px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                                Preview
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <select id="voiceSelect" class="w-full appearance-none bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-krishna-orange/50 focus:border-krishna-orange transition-all cursor-pointer">
+                                <option value="prabhupada">🙏 Prabhupada</option>
+                                <option value="girl">👩 Girl Voice</option>
+                                <option value="classic">⚡ Classic Tone</option>
+                                <option value="gentle">🔔 Gentle Bell</option>
+                                <option value="deep">🕉️ Deep Om</option>
+                                <option value="tibetan">🎵 Tibetan Bowl</option>
+                                <option value="crystal">💎 Crystal Chime</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Speed Control Card - ONLY SHOWN WHEN VOICE IS ENABLED -->
+                    <div id="speedControlCard" class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-6 h-6 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-gauge text-green-600 dark:text-green-400 text-xs"></i>
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold text-gray-900 dark:text-white">Playback Speed</label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Adjust chanting tempo</p>
+                            </div>
+                        </div>
+
+                        <!-- Speed Slider -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Slow</span>
+                                <span id="speedValue" class="text-sm font-semibold text-krishna-orange">1.4×</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Fast</span>
+                            </div>
+
+                            <!-- Custom Slider -->
+                            <div class="relative">
+                                <input type="range" id="speedSlider" min="1" max="1.7" step="0.1" value="1.4"
+                                       class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider">
+
+                                <!-- Speed markers -->
+                                <div class="flex justify-between mt-2 px-1">
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                                        <span class="text-xs text-gray-400 dark:text-gray-500 mt-1">1.0</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                                        <span class="text-xs text-gray-400 dark:text-gray-500 mt-1">1.25</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-1.5 h-1.5 bg-krishna-orange rounded-full"></div>
+                                        <span class="text-xs text-krishna-orange font-medium mt-1">1.4</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                                        <span class="text-xs text-gray-400 dark:text-gray-500 mt-1">1.5</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                                        <span class="text-xs text-gray-400 dark:text-gray-500 mt-1">1.7</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other Audio Settings Card - IMPROVED TEXT -->
+                    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-6 h-6 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-volume-high text-purple-600 dark:text-purple-400 text-xs"></i>
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold text-gray-900 dark:text-white">Other Sounds</label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Additional audio settings</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Bead Sound Toggle - IMPROVED TEXT -->
+                            <div class="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-gray-700/30 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                                        <i id="beadSoundIcon" class="fas fa-volume-up text-blue-600 dark:text-blue-400 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Bead Sounds</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Play sound with each bead</div>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="beadSoundToggle" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300/25 dark:peer-focus:ring-blue-800/25 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+
+                            <!-- Round Notification Toggle - IMPROVED TEXT -->
+                            <div class="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-gray-700/30 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
+                                        <i id="notificationIcon" class="fas fa-bell text-green-600 dark:text-green-400 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Round Complete</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Special sound when round finishes</div>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="notificationToggle" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300/25 dark:peer-focus:ring-green-800/25 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reset Round Button -->
+            </div>
+
+            <!-- Scroll to Counter Button -->
+            <div class="text-center mb-8">
+                <button id="scrollButton" class="px-6 py-3 bg-gradient-to-r from-krishna-orange to-krishna-gold text-white font-medium rounded-full hover:shadow-lg transition-all duration-200 hover:scale-105">
+                    <i class="fas fa-arrow-up mr-2"></i>
+                    Scroll to Counter
+                </button>
+            </div>
+
+            <!-- Enhanced Keyboard Instructions -->
+            <div class="bg-gray-800/30 rounded-2xl p-6 mb-8">
+                <h3 class="text-lg font-semibold mb-4">Keyboard Shortcuts</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="flex items-center space-x-3">
+                        <kbd class="px-2 py-1 bg-gray-700 rounded text-xs">Space</kbd>
+                        <span class="text-gray-400">Chant bead</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <kbd class="px-2 py-1 bg-gray-700 rounded text-xs">Enter</kbd>
+                        <span class="text-gray-400">Chant bead</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-3 gap-2 md:gap-4">
+                <div class="stats-card bg-gray-800/30 rounded-xl p-3 md:p-4 text-center">
+                    <div class="w-8 h-8 md:w-12 md:h-12 bg-krishna-orange/20 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-3">
+                        <i class="fas fa-calendar-day text-krishna-orange text-sm md:text-lg"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-white mb-1" id="todayCount">0</h3>
+                    <p class="text-gray-400 text-xs md:text-sm">Today's Rounds</p>
+                </div>
+                <div class="stats-card bg-gray-800/30 rounded-xl p-3 md:p-4 text-center">
+                    <div class="w-8 h-8 md:w-12 md:h-12 bg-krishna-gold/20 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-3">
+                        <i class="fas fa-fire text-krishna-gold text-sm md:text-lg"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-white mb-1" id="streakCount">0</h3>
+                    <p class="text-gray-400 text-xs md:text-sm">Day Streak</p>
+                </div>
+                <div class="stats-card bg-gray-800/30 rounded-xl p-3 md:p-4 text-center">
+                    <div class="w-8 h-8 md:w-12 md:h-12 bg-krishna-blue/20 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-3">
+                        <i class="fas fa-infinity text-krishna-blue text-sm md:text-lg"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-white mb-1" id="totalCount">0</h3>
+                    <p class="text-gray-400 text-xs md:text-sm">Total Rounds</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="max-w-2xl mx-auto mt-12">
+            <h3 class="text-2xl font-bold mb-6 text-center">Recent Activity</h3>
+            <div id="activityList" class="space-y-3">
+                <!-- Activity items will be dynamically inserted here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800/30 border-t border-gray-700/50 py-8 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-400 mb-4">
+                "Hare Krishna, Hare Krishna, Krishna Krishna, Hare Hare<br>
+                Hare Rama, Hare Rama, Rama Rama, Hare Hare"
+            </p>
+            <p class="text-sm text-gray-500">
+                Made with devotion • Track your spiritual journey
+            </p>
+        </div>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
